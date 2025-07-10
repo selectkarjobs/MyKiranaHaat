@@ -3,45 +3,46 @@ package com.mykiranahaat.admin
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.mykiranahaat.admin.ui.screens.DashboardScreen
+import com.mykiranahaat.admin.ui.screens.LoginScreen
+import com.mykiranahaat.admin.ui.screens.SignupScreen
 import com.mykiranahaat.admin.ui.theme.MyKiranaHaatTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
             MyKiranaHaatTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                MyKiranaHaatApp()
             }
         }
     }
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    MyKiranaHaatTheme {
-        Greeting("Android")
+fun MyKiranaHaatApp() {
+    val navController = rememberNavController()
+    NavHost(navController = navController, startDestination = "login") {
+        composable("login") {
+            LoginScreen(
+                onNavigateToSignup = { navController.navigate("signup") },
+                onLoginSuccess = { navController.navigate("dashboard") { popUpTo("login") { inclusive = true } } }
+            )
+        }
+        composable("signup") {
+            SignupScreen(
+                onNavigateToLogin = { navController.navigate("login") },
+                onSignupSuccess = { navController.navigate("dashboard") { popUpTo("signup") { inclusive = true } } }
+            )
+        }
+        composable("dashboard") {
+            DashboardScreen()
+        }
     }
 }
