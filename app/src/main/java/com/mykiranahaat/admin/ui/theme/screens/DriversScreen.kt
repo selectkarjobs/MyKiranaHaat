@@ -8,11 +8,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
 @Composable
-fun DashboardScreen() {
+fun DriversScreen() {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        Text("Dashboard")
+        Text("Drivers")
     }
 }
