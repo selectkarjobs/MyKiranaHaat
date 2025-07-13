@@ -67,7 +67,7 @@ fun DashboardScreen() {
                         contentColor = Color.White
                     )
                 ) {
-                    Text("View Orders")
+                    Text("View Order")
                 }
             }
         }
