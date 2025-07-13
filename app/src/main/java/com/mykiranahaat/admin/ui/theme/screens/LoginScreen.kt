@@ -30,6 +30,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.layout.ContentScale
+import com.mykiranahaat.admin.R // Assuming R.drawable.logo is defined in resources
 
 @Composable
 fun LoginScreen(
@@ -84,6 +88,16 @@ fun LoginScreen(
                     .padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                // Logo placeholder
+                Image(
+                    painter = painterResource(id = R.drawable.logo), // Replace with actual logo resource
+                    contentDescription = "MyKiranaHaat Logo",
+                    modifier = Modifier
+                        .size(100.dp)
+                        .padding(bottom = 16.dp),
+                    contentScale = ContentScale.Fit
+                )
+
                 Text(
                     text = "MyKiranaHaat Admin",
                     style = MaterialTheme.typography.headlineMedium.copy(
@@ -100,20 +114,31 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                OutlinedTextField(
-                    value = viewModel.mobileNumber.value,
-                    onValueChange = { viewModel.mobileNumber.value = it.take(10) },
-                    label = { Text("Mobile Number") },
+                Row(
                     modifier = Modifier.fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                    singleLine = true,
-                    colors = TextFieldDefaults.colors(
-                        focusedIndicatorColor = Color(0xFF6200EE),
-                        unfocusedIndicatorColor = Color.Gray,
-                        focusedContainerColor = Color.White,
-                        unfocusedContainerColor = Color.White
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "+91",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.Black,
+                        modifier = Modifier.padding(end = 8.dp)
                     )
-                )
+                    OutlinedTextField(
+                        value = viewModel.mobileNumber.value,
+                        onValueChange = { viewModel.mobileNumber.value = it.take(10) },
+                        label = { Text("Mobile Number") },
+                        modifier = Modifier.fillMaxWidth(),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                        singleLine = true,
+                        colors = TextFieldDefaults.colors(
+                            focusedIndicatorColor = Color(0xFF6200EE),
+                            unfocusedIndicatorColor = Color.Gray,
+                            focusedContainerColor = Color.White,
+                            unfocusedContainerColor = Color.White
+                        )
+                    )
+                }
 
                 AnimatedVisibility(
                     visible = showOtpField,
@@ -165,7 +190,7 @@ fun LoginScreen(
                             TextButton(
                                 onClick = {
                                     if (canResend) {
-                                        viewModel.sendOtp(viewModel.mobileNumber.value, activity, object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+                                        viewModel.sendOtp("+91${viewModel.mobileNumber.value}", activity, object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
                                             override fun onVerificationCompleted(credential: PhoneAuthCredential) {
                                                 viewModel.verifyOtp(credential)
                                             }
@@ -206,7 +231,7 @@ fun LoginScreen(
                 Button(
                     onClick = {
                         if (!showOtpField) {
-                            viewModel.sendOtp(viewModel.mobileNumber.value, activity, object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+                            viewModel.sendOtp("+91${viewModel.mobileNumber.value}", activity, object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
                                 override fun onVerificationCompleted(credential: PhoneAuthCredential) {
                                     viewModel.verifyOtp(credential)
                                 }
