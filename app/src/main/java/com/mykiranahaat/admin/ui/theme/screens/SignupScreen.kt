@@ -2,6 +2,7 @@ package com.mykiranahaat.admin.ui.screens
 
 import android.app.Activity
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -30,6 +31,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.layout.ContentScale
 
 @Composable
 fun SignupScreen(
@@ -84,6 +87,16 @@ fun SignupScreen(
                     .padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                // Logo inside the card
+                Image(
+                    painter = painterResource(id = com.mykiranahaat.admin.R.drawable.logo), // Replace with actual logo resource
+                    contentDescription = "MyKiranaHaat Logo",
+                    modifier = Modifier
+                        .size(100.dp)
+                        .padding(bottom = 16.dp),
+                    contentScale = ContentScale.Fit
+                )
+
                 Text(
                     text = "MyKiranaHaat Admin",
                     style = MaterialTheme.typography.headlineMedium.copy(
@@ -107,11 +120,21 @@ fun SignupScreen(
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                     singleLine = true,
+                    enabled = !showOtpField, // Disable field after OTP is sent
+                    prefix = {
+                        Text(
+                            text = "+91 ",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = if (showOtpField) Color.Gray else Color.Black
+                        )
+                    },
                     colors = TextFieldDefaults.colors(
                         focusedIndicatorColor = Color(0xFF6200EE),
                         unfocusedIndicatorColor = Color.Gray,
+                        disabledIndicatorColor = Color.Gray,
                         focusedContainerColor = Color.White,
-                        unfocusedContainerColor = Color.White
+                        unfocusedContainerColor = Color.White,
+                        disabledContainerColor = Color.White
                     )
                 )
 
