@@ -1,75 +1,136 @@
 package com.mykiranahaat.admin.ui.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Info // fallback icon for Drivers
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip // Added import
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.*
+import androidx.compose.ui.Alignment
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.rememberDrawerState
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(Color(0xFF6200EE), Color(0xFF3700B3))
-                )
-            ),
-        contentAlignment = Alignment.Center
+    val navController = rememberNavController()
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+
+    val bottomNavItems = listOf(
+        NavItem.Dashboard,
+        NavItem.Stores,
+        NavItem.Products,
+        NavItem.Customers,
+        NavItem.Drivers
+    )
+
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            // Blank drawer for now
+            Box(Modifier.fillMaxSize())
+        }
     ) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp)
-                .clip(MaterialTheme.shapes.medium),
-            colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.95f))
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "Welcome to MyKiranaHaat Admin",
-                    style = MaterialTheme.typography.headlineMedium.copy(
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF6200EE)
-                    )
+        Scaffold(
+            topBar = {
+                SmallTopAppBar(
+                    title = {
+                        Text(
+                            bottomNavItems.firstOrNull { it.route == navController.currentBackStackEntryAsState().value?.destination?.route }?.label
+                                ?: "Dashboard"
+                        )
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = {
+                            if (drawerState.isClosed) scope.launch { drawerState.open() }
+                        }) {
+                            Icon(Icons.Default.Home, contentDescription = "Open drawer")
+                        }
+                    }
                 )
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = "Dashboard",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = Color.Black
-                )
-                Spacer(modifier = Modifier.height(24.dp))
-                Text(
-                    text = "Manage your Kirana store here.",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = Color.Gray
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Button(
-                    onClick = { /* TODO: Add dashboard actions */ },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(48.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF6200EE),
-                        contentColor = Color.White
-                    )
-                ) {
-                    Text("View Orders")
+            },
+            bottomBar = {
+                NavigationBar {
+                    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
+                    bottomNavItems.forEach { item ->
+                        NavigationBarItem(
+                            selected = currentRoute == item.route,
+                            onClick = {
+                                if (currentRoute != item.route) navController.navigate(item.route) {
+                                    popUpTo(navController.graph.startDestinationId) { saveState = true }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                            },
+                            icon = { Icon(item.icon, contentDescription = item.label) },
+                            label = { Text(item.label) }
+                        )
+                    }
                 }
             }
+        ) { innerPadding ->
+            NavHost(
+                navController = navController,
+                startDestination = NavItem.Dashboard.route,
+                modifier = Modifier.padding(innerPadding)
+            ) {
+                composable(NavItem.Dashboard.route) { DashboardHome() }
+                composable(NavItem.Stores.route) { StoresScreen() }
+                composable(NavItem.Products.route) { ProductsScreen() }
+                composable(NavItem.Customers.route) { CustomersScreen() }
+                composable(NavItem.Drivers.route) { DriversScreen() }
+            }
         }
+    }
+}
+
+sealed class NavItem(val route: String, val label: String, val icon: androidx.compose.ui.graphics.vector.ImageVector) {
+    object Dashboard : NavItem("dashboard", "Dashboard", Icons.Default.Home)
+    object Stores : NavItem("stores", "Stores", Icons.Default.ShoppingCart) // Substitute icon for store
+    object Products : NavItem("products", "Products", Icons.Default.ShoppingCart)
+    object Customers : NavItem("customers", "Customers", Icons.Default.Person) // Use Person icon for customers
+    object Drivers : NavItem("drivers", "Drivers", Icons.Default.Info) // Fallback icon for drivers
+}
+
+// Blank content for all activities (screens)
+@Composable
+fun DashboardHome() {
+    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Text("Dashboard Content")
+    }
+}
+
+@Composable
+fun StoresScreen() {
+    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Text("Stores Content")
+    }
+}
+
+@Composable
+fun ProductsScreen() {
+    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Text("Products Content")
+    }
+}
+
+@Composable
+fun CustomersScreen() {
+    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Text("Customers Content")
+    }
+}
+
+@Composable
+fun DriversScreen() {
+    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Text("Drivers Content")
     }
 }
